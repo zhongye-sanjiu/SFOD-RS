@@ -1,0 +1,28 @@
+name: GPU Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  gpu-test:
+    runs-on: [self-hosted, Linux, X64]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Show system info
+        run: |
+          pwd
+          whoami
+          nvidia-smi
+
+      - name: Test PyTorch CUDA
+        run: |
+          /home/wentiezhen/miniconda3/envs/sfod/bin/python -c "
+          import torch
+          print('PyTorch:', torch.__version__)
+          print('CUDA available:', torch.cuda.is_available())
+          print('CUDA Runtime:', torch.version.cuda)
+          print('GPU:', torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'N/A')
+          "
