@@ -1,4 +1,4 @@
-name: GPU Test
+name: SFOD-RS GPU Test
 
 on:
   workflow_dispatch:
@@ -11,14 +11,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Show system info
+      - name: Show working directory
         run: |
+          echo "Workspace: $GITHUB_WORKSPACE"
           pwd
-          whoami
+          ls -la
+
+      - name: Check NVIDIA GPU
+        run: |
           nvidia-smi
 
-      - name: Test PyTorch CUDA
+      - name: Check Python environment
         run: |
+          /home/wentiezhen/miniconda3/envs/sfod/bin/python --version
           /home/wentiezhen/miniconda3/envs/sfod/bin/python -c "
           import torch
           print('PyTorch:', torch.__version__)
@@ -26,6 +31,12 @@ jobs:
           print('CUDA Runtime:', torch.version.cuda)
           print('GPU:', torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'N/A')
           "
+
+      - name: Show repository files
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          pwd
+          find . -maxdepth 2 -type f | head -100
 
       - name: Run SFOD-RS test
         run: |
